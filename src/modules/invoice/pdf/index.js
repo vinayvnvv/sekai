@@ -9,6 +9,9 @@ import "./style.css";
 import { Button } from "@mui/material";
 import LocalPrintshopIcon from "@mui/icons-material/LocalPrintshop";
 import EditIcon from "@mui/icons-material/Edit";
+import AddIcon from "@mui/icons-material/Add";
+import HomeIcon from "@mui/icons-material/Home";
+import { Link } from "react-router-dom";
 
 const PDF = ({ data, onEdit }) => {
   const {
@@ -304,13 +307,36 @@ const PDF = ({ data, onEdit }) => {
           Print
         </Button>
         <Button
-          color="success"
+          color="info"
           startIcon={<EditIcon />}
+          onClick={onEdit}
+          variant="contained"
+          disableElevation
+          sx={{ mt: 1 }}
+        >
+          Edit
+        </Button>
+        <Button
+          component={Link}
+          to={"/invoice"}
+          color="success"
+          startIcon={<AddIcon />}
           onClick={onEdit}
           variant="text"
           sx={{ mt: 1 }}
         >
-          Edit
+          New Invoice
+        </Button>
+        <Button
+          component={Link}
+          to={"/"}
+          color="success"
+          startIcon={<HomeIcon />}
+          onClick={onEdit}
+          variant="text"
+          sx={{ mt: 1 }}
+        >
+          Home
         </Button>
       </div>
     </div>

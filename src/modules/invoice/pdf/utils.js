@@ -301,3 +301,46 @@ export const statesList = [
   { label: "Uttarakhand", value: "Uttarakhand", code: "UK" },
   { label: "West Bengal", value: "West Bengal", code: "WB" },
 ];
+
+export const formatInvoicePOSTDataForFirebase = (v) => {
+  const data = { ...v };
+  data["invoice_date"] = v.invoice_date.toISOString();
+  const passengers = data["passengers"];
+  const passe = [];
+  if (Array.isArray(passengers)) {
+    passengers.forEach((passenger) => {
+      passe.push({
+        ...passenger,
+        travel_date: passenger.travel_date.toISOString(),
+      });
+    });
+  }
+  data["passengers"] = passe;
+  return data;
+};
+
+export const formatInvoiceGETDataFromFirebase = (v) => {
+  console.log("formatInvoiceGETDataFromFirebase", v);
+  const data = { ...v };
+  data["invoice_date"] = dayjs(v.invoice_date);
+  const passengers = data["passengers"];
+  const passe = [];
+  if (Array.isArray(passengers)) {
+    passengers.forEach((passenger) => {
+      passe.push({
+        ...passenger,
+        travel_date: new Date(passenger.travel_date),
+      });
+    });
+  }
+  data["passengers"] = passe;
+  return data;
+};
+
+export const formatDate = (date, format) => {
+  try {
+    return dayjs(date).format(format);
+  } catch (err) {
+    return "";
+  }
+};
