@@ -1,13 +1,20 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@font-face {
+  font-family: 'calibri';
+  src: local('calibri'), url('./assets/fonts/calibri.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'calibribold';
+  src: local('calibribold'), url('./assets/fonts/calibri-bold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'cambriabold';
+  src: local('cambriabold'), url('./assets/fonts/cambria-bold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'nimbus';
+  src: local('nimbus'), url('./assets/fonts/nimbus.ttf') format('truetype');
 }

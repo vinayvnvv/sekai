@@ -1,24 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import "./App.css";
+import Form from "./form";
+import PDF from "./pdf";
+import { SnackbarProvider } from "notistack";
 
 function App() {
+  const [invoiceData, setInvoiceData] = useState({ passengers: [] });
+  const [mode, setMode] = useState("add");
+  const onSubmitForm = (v) => {
+    setInvoiceData(v);
+    setMode("invioce");
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <SnackbarProvider maxSnack={3}>
+      <div className="App">
+        {mode === "invioce" ? (
+          <PDF data={invoiceData} onEdit={() => setMode("edit")} />
+        ) : (
+          <Form initialData={invoiceData} onSubmit={onSubmitForm} />
+        )}
+      </div>
+    </SnackbarProvider>
   );
 }
 
