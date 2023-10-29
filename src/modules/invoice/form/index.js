@@ -19,6 +19,7 @@ import { getTodayDateFormat } from "../pdf/utils";
 import Passangers from "./Passengers";
 import EastIcon from "@mui/icons-material/East";
 import { useSnackbar } from "notistack";
+import AppHeader from "../../components/AppHeader";
 
 const FormSchema = Yup.object().shape({
   type: Yup.string().required("Required"),
@@ -55,20 +56,8 @@ const FormApp = ({ onSubmit, initialData }) => {
   const { enqueueSnackbar } = useSnackbar();
   return (
     <div>
+      <AppHeader />
       <Box sx={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
-        <AppBar position="static">
-          <Container maxWidth="xl">
-            <Toolbar disableGutters>
-              <img
-                src="https://sekaiholidays.in/wp-content/uploads/2022/11/cropped-top-logo-32x32.png"
-                width={40}
-              />
-              <Typography variant="h6" noWrap component="a" sx={{ ml: 1 }}>
-                Invoice Generator
-              </Typography>
-            </Toolbar>
-          </Container>
-        </AppBar>
         <Container maxWidth="xl">
           <Formik
             validationSchema={FormSchema}

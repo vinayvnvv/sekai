@@ -1,27 +1,30 @@
-import { useState } from "react";
-import "./App.css";
-import Form from "./form";
-import PDF from "./pdf";
 import { SnackbarProvider } from "notistack";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  // Route,
+  // Link,
+} from "react-router-dom";
+import Home from "./modules/home";
+import InvoiceApp from "./modules/invoice";
 
-function App() {
-  const [invoiceData, setInvoiceData] = useState({ passengers: [] });
-  const [mode, setMode] = useState("add");
-  const onSubmitForm = (v) => {
-    setInvoiceData(v);
-    setMode("invioce");
-  };
+const router = createBrowserRouter([
+  {
+    path: "/",
+    Component: Home,
+  },
+  {
+    path: "invoice",
+    Component: InvoiceApp,
+  },
+]);
+
+const App = () => {
   return (
     <SnackbarProvider maxSnack={3}>
-      <div className="App">
-        {mode === "invioce" ? (
-          <PDF data={invoiceData} onEdit={() => setMode("edit")} />
-        ) : (
-          <Form initialData={invoiceData} onSubmit={onSubmitForm} />
-        )}
-      </div>
+      <RouterProvider router={router} />
     </SnackbarProvider>
   );
-}
+};
 
 export default App;
