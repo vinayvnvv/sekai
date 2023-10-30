@@ -1,4 +1,11 @@
-import { Box, Button, Container, IconButton, Stack } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  IconButton,
+  Stack,
+  Tooltip,
+} from "@mui/material";
 import { addData, deleteInvoice, getAllInvoice } from "../../firebase";
 import AppHeader from "../components/AppHeader";
 import { useEffect, useState } from "react";
@@ -9,10 +16,16 @@ import { Link } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
 const columns = [
-  { field: "customer_name", flex: 20, headerName: "Customer Name" },
+  {
+    field: "customer_name",
+    flex: 20,
+    minWidth: 160,
+    headerName: "Customer Name",
+  },
   {
     field: "invoice_no",
     flex: 20,
+    minWidth: 190,
     headerName: "Invoice No",
     renderCell: (params) => (
       <div>
@@ -24,24 +37,33 @@ const columns = [
   {
     field: "invoice_date",
     flex: 20,
+    minWidth: 190,
     headerName: "Date of invoice",
     renderCell: (params) => (
       <div>{formatDate(params.row.value, "DD-MMM-YYYY")}</div>
     ),
   },
-  { field: "mode", flex: 20, headerName: "Mode of Transport" },
+  {
+    field: "mode",
+    flex: 20,
+    minWidth: 100,
+    headerName: "Mode of Transport",
+  },
   {
     field: "actions",
     flex: 20,
+    minWidth: 100,
     headerName: "Actions",
     renderCell: (params) => (
-      <IconButton
-        component={Link}
-        to={`/invoice?id=${params.row.id}&view=doc`}
-        aria-label="delete"
-      >
-        <VisibilityIcon />
-      </IconButton>
+      <Tooltip title="View Invoice" placement="right">
+        <IconButton
+          component={Link}
+          to={`/invoice?id=${params.row.id}&view=doc`}
+          aria-label="delete"
+        >
+          <VisibilityIcon />
+        </IconButton>
+      </Tooltip>
     ),
   },
 ];

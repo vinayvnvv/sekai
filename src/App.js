@@ -2,13 +2,14 @@ import { SnackbarProvider } from "notistack";
 import {
   createBrowserRouter,
   RouterProvider,
+  createHashRouter,
   // Route,
   // Link,
 } from "react-router-dom";
 import Home from "./modules/home";
 import InvoiceApp from "./modules/invoice";
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/",
     Component: Home,
