@@ -124,6 +124,11 @@ var in_types = [
     type: "Ticket",
   },
   {
+    label: "International Visa",
+    value: "SI/MYS/IV",
+    type: "Ticket",
+  },
+  {
     label: "International Tour",
     value: "SI/MYS/IN",
     type: "Tour",
@@ -175,6 +180,7 @@ export const amtInWords = (num) => {
 
 export const calcTax = (amt, perc) => {
   try {
+    if (!amt) return 0;
     const amount = parseInt(amt);
     return Math.ceil((amount * perc) / 100);
   } catch (err) {
@@ -190,7 +196,9 @@ export const formatInvioceTableData = (data) => {
   let total_igst_amount = 0;
   let total_sgst_amount = 0;
   let total_cgst_amount = 0;
+  let total_tax_value = 0;
   let tax_rate_perc = 18;
+  let show_igst = data?.show_igst;
   const invoice_t = in_types.filter((t) => t.value === data.type)[0];
   let invoice_type_title = invoice_t.label;
   let invoice_tour_ticket = invoice_t.type;
@@ -222,10 +230,15 @@ export const formatInvioceTableData = (data) => {
         total_igst_amount += obj["igst_amount"];
         total_sgst_amount += obj["sgst_amount"];
         total_cgst_amount += obj["cgst_amount"];
+        total_tax_value += show_igst
+          ? obj["igst_amount"]
+          : obj["sgst_amount"] + obj["cgst_amount"];
         total_amount =
           total_amount +
           total_tour_cost +
-          obj["igst_amount"] +
+          (show_igst
+            ? obj["igst_amount"]
+            : obj["cgst_amount"] + obj["sgst_amount"]) +
           (tax_rate == 18 ? commision : 0);
         passengers.push(obj);
       }
@@ -243,6 +256,7 @@ export const formatInvioceTableData = (data) => {
     igst_cgst_rate: tax_rate_perc / 2,
     invoice_type_title,
     invoice_tour_ticket,
+    total_tax_value,
   };
   return finalData;
 };
@@ -302,9 +316,13 @@ export const statesList = [
   { label: "West Bengal", value: "West Bengal", code: "WB" },
 ];
 
-export const formatInvoicePOSTDataForFirebase = (v) => {
+export const formatInvoicePOSTDataForFirebase = (v, update) => {
   const data = { ...v };
   data["invoice_date"] = v.invoice_date.toISOString();
+  if (!update) data["created_at"] = new Date().toISOString();
+  if (update) {
+    data["updated_at"] = new Date().toISOString();
+  }
   const passengers = data["passengers"];
   const passe = [];
   if (Array.isArray(passengers)) {
@@ -343,4 +361,152 @@ export const formatDate = (date, format) => {
   } catch (err) {
     return "";
   }
+};
+
+export const filterInvoiceData = (arr = []) => {
+  const filter = { today: [] };
+  if (Array.isArray(arr) && arr.length > 0) {
+    const slicedArray = arr
+      .slice(0, 25)
+      .filter((obj) => dayjs().isSame(obj.created_at, "day"));
+    filter.today = slicedArray;
+  }
+
+  return filter;
+};
+
+export function groupDataByYearAndMonth(data) {
+  const result = {};
+  const stats = {};
+  for (let j = 0; j < data.length; j++) {
+    const item = data[j];
+    console.log("item", item);
+    const date = new Date(item.invoice_date);
+    const year = date.getFullYear();
+    const month = date
+      .toLocaleString("default", { month: "short" })
+      .toLowerCase()
+      .substring(0, 3);
+
+    if (!result[year]) {
+      result[year] = {};
+      stats[year] = {
+        commision: 0,
+        tour_cost: 0,
+        no_of_passengers: 0,
+        destination: [],
+      };
+    }
+
+    if (!result[year][month]) {
+      result[year][month] = [];
+      stats[year][month] = {
+        commision: 0,
+        tour_cost: 0,
+        no_of_passengers: 0,
+        destination: [],
+      };
+    }
+
+    result[year][month].push(item);
+
+    if (item?.passengers) {
+      for (let i = 0; i < item?.passengers?.length; i++) {
+        const passenger = item?.passengers[i];
+        const { commision, tour_cost, destination, no_of_passengers } =
+          passenger;
+        stats[year]["commision"] = commision
+          ? stats[year].commision + commision
+          : stats[year].commision;
+        stats[year]["tour_cost"] = tour_cost
+          ? stats[year].tour_cost + tour_cost
+          : stats[year].tour_cost;
+        stats[year]["no_of_passengers"] = no_of_passengers
+          ? stats[year].no_of_passengers + parseInt(no_of_passengers)
+          : stats[year].no_of_passengers;
+        stats[year]["destination"] = [
+          ...stats[year].destination,
+          destination.replace(/\s+/g, ""),
+        ];
+
+        stats[year][month]["commision"] = commision
+          ? stats[year][month].commision + commision
+          : stats[year][month].commision;
+        stats[year][month]["tour_cost"] = tour_cost
+          ? stats[year][month].tour_cost + tour_cost
+          : stats[year][month].tour_cost;
+        stats[year][month]["no_of_passengers"] = no_of_passengers
+          ? stats[year][month].no_of_passengers + parseInt(no_of_passengers)
+          : stats[year][month].no_of_passengers;
+        stats[year][month]["destination"] = [
+          ...stats[year][month].destination,
+          destination.replace(/\s+/g, ""),
+        ];
+      }
+    }
+  }
+  return { result, stats };
+}
+
+export function sortAndEnhanceMonths(months) {
+  const monthMap = {
+    jan: "January",
+    feb: "February",
+    mar: "March",
+    apr: "April",
+    may: "May",
+    jun: "June",
+    jul: "July",
+    aug: "August",
+    sep: "September",
+    oct: "October",
+    nov: "November",
+    dec: "December",
+  };
+
+  const sortedMonths = months.sort((a, b) => {
+    const monthOrder = [
+      "jan",
+      "feb",
+      "mar",
+      "apr",
+      "may",
+      "jun",
+      "jul",
+      "aug",
+      "sep",
+      "oct",
+      "nov",
+      "dec",
+    ];
+    return monthOrder.indexOf(a) - monthOrder.indexOf(b);
+  });
+
+  return sortedMonths.map((shortMonth) => ({
+    short: shortMonth,
+    full: monthMap[shortMonth],
+  }));
+}
+
+export function getTopVisitedPlaces(places, topN) {
+  // Count occurrences of each place
+  const placeCounts = places.reduce((counts, place) => {
+    counts[place] = (counts[place] || 0) + 1;
+    return counts;
+  }, {});
+
+  // Convert the counts object to an array of [place, count] pairs
+  const sortedPlaces = Object.entries(placeCounts).sort((a, b) => b[1] - a[1]);
+
+  // Extract the top N places
+  return sortedPlaces.slice(0, topN).map((entry) => entry[0]);
+}
+
+export const formatINR = (amount) => {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
 };

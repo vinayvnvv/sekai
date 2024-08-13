@@ -5,8 +5,10 @@ import {
   AppBar,
   Box,
   Button,
+  Checkbox,
   Container,
   Divider,
+  FormControlLabel,
   Paper,
   Stack,
   TextField,
@@ -15,7 +17,7 @@ import {
 } from "@mui/material";
 import MuiField, { MuiDateField, MuiSelectField } from "./MuiField";
 import * as Yup from "yup";
-import { getTodayDateFormat } from "../pdf/utils";
+import { getTodayDateFormat, statesList } from "../pdf/utils";
 import Passangers from "./Passengers";
 import EastIcon from "@mui/icons-material/East";
 import { useSnackbar } from "notistack";
@@ -106,6 +108,10 @@ const FormApp = ({ onSubmit, initialData }) => {
                                 value: "SI/MYS/IT",
                               },
                               {
+                                label: "International Visa (SI/MYS/IV)",
+                                value: "SI/MYS/IV",
+                              },
+                              {
                                 label: "International Tour (SI/MYS/IN)",
                                 value: "SI/MYS/IN",
                               },
@@ -117,7 +123,10 @@ const FormApp = ({ onSubmit, initialData }) => {
                                 label: "Domestic Ticket (SI/MYS/DT)",
                                 value: "SI/MYS/DT",
                               },
-                              { label: "Other Services", value: "SI/MYS/OS" },
+                              {
+                                label: "Other Services (SI/MYS/OS)",
+                                value: "SI/MYS/OS",
+                              },
                             ]}
                             touched={touched}
                             setFieldValue={setFieldValue}
@@ -159,16 +168,25 @@ const FormApp = ({ onSubmit, initialData }) => {
                             touched={touched}
                             setFieldValue={setFieldValue}
                           />
-                          <MuiField
+                          <MuiSelectField
                             label={"State"}
                             submitCount={submitCount}
                             errors={errors}
                             name="state"
                             values={values}
-                            capitalize
+                            options={statesList}
                             touched={touched}
                             setFieldValue={setFieldValue}
                           />
+                          {/* <MuiField
+                            label={"State"}
+                            submitCount={submitCount}
+                            errors={errors}
+                            name="state"
+                            values={values}
+                            touched={touched}
+                            setFieldValue={setFieldValue}
+                          /> */}
                           <MuiSelectField
                             label={"Transportation Mode"}
                             submitCount={submitCount}
@@ -191,6 +209,24 @@ const FormApp = ({ onSubmit, initialData }) => {
                                 value: "Cruise",
                               },
                             ]}
+                          />
+                        </Box>
+                      </Paper>
+                      <Paper variant="outlined" sx={{ mt: 1 }}>
+                        <Typography sx={{ px: 3, py: 2 }}>Others</Typography>
+                        <Divider />
+                        <Box sx={{ p: 2, px: 5 }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                name="show_igst"
+                                checked={values["show_igst"]}
+                                onChange={(e) =>
+                                  setFieldValue("show_igst", e.target.checked)
+                                }
+                              />
+                            }
+                            label="Show IGST"
                           />
                         </Box>
                       </Paper>
@@ -231,11 +267,38 @@ const FormApp = ({ onSubmit, initialData }) => {
                             touched={touched}
                             setFieldValue={setFieldValue}
                           />
-                          <MuiField
+                          <MuiSelectField
                             label={"Customer State"}
                             submitCount={submitCount}
                             errors={errors}
                             name="customer_state"
+                            values={values}
+                            options={statesList}
+                            touched={touched}
+                            setFieldValue={setFieldValue}
+                          />
+                          {/* <MuiField
+                            label={"Customer State"}
+                            submitCount={submitCount}
+                            errors={errors}
+                            name="customer_state"
+                            values={values}
+                            touched={touched}
+                            setFieldValue={setFieldValue}
+                          /> */}
+                        </Box>
+                      </Paper>
+                      <Paper variant="outlined" sx={{ mt: 1 }}>
+                        <Typography sx={{ px: 3, py: 2 }}>Remarks</Typography>
+                        <Divider />
+                        <Box sx={{ p: 2, px: 5 }}>
+                          <MuiField
+                            label={"Reference"}
+                            submitCount={submitCount}
+                            multiline
+                            rows={3}
+                            errors={errors}
+                            name="remark"
                             values={values}
                             touched={touched}
                             setFieldValue={setFieldValue}

@@ -7,7 +7,8 @@ import {
   formatInvoiceGETDataFromFirebase,
   formatInvoicePOSTDataForFirebase,
 } from "./pdf/utils";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, ThemeProvider } from "@mui/material";
+import { theme } from "../../config/theme";
 
 function InvoiceApp() {
   // hooks
@@ -27,7 +28,7 @@ function InvoiceApp() {
       setId(doc.id);
       navigate(`${location.pathname}?id=${doc.id}`, { replace: true });
     } else {
-      doc = await updateInvoice(id, formatInvoicePOSTDataForFirebase(v));
+      doc = await updateInvoice(id, formatInvoicePOSTDataForFirebase(v, true));
     }
     setInvoiceData({ ...invoiceData, ...v });
     setMode("invioce");

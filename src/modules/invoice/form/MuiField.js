@@ -26,6 +26,8 @@ const MuiField = ({
   rows,
   capitalize,
   inputType,
+  fullWidth,
+  defaultLabelStyle,
   ...restProps
 }) => {
   console.log("errors", errors);
@@ -39,19 +41,23 @@ const MuiField = ({
     setFieldValue(name, value);
   };
   return (
-    <Box sx={{ pb: 3, width: "70%" }}>
-      <Typography
-        variant="caption"
-        display="block"
-        gutterBottom
-        color={"GrayText"}
-      >
-        {label}
-      </Typography>
+    <Box sx={{ pb: 3, width: fullWidth ? "100%" : "70%" }}>
+      {!defaultLabelStyle && (
+        <Typography
+          variant="caption"
+          display="block"
+          gutterBottom
+          color={"GrayText"}
+        >
+          {label}
+        </Typography>
+      )}
+
       <TextField
         sx={{ minWidth: 280 }}
         fullWidth
-        multiline
+        multiline={multiline}
+        label={defaultLabelStyle ? label : ""}
         rows={rows}
         name={name}
         value={values[name]}
@@ -114,7 +120,7 @@ export const MuiSelectField = ({
             ))}
         </Select>
         {submitCount > 0 && errors[name] && (
-          <FormHelperText>With label + helper text</FormHelperText>
+          <FormHelperText error>{errors[name]}</FormHelperText>
         )}
       </FormControl>
     </Box>

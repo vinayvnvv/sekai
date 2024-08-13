@@ -6,7 +6,7 @@ import {
   putGlobalStylesForPrint,
 } from "./utils";
 import "./style.css";
-import { Button } from "@mui/material";
+import { Button, Paper } from "@mui/material";
 import LocalPrintshopIcon from "@mui/icons-material/LocalPrintshop";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
@@ -25,6 +25,8 @@ const PDF = ({ data, onEdit }) => {
     customer_gstin,
     customer_state,
     type,
+    remark,
+    show_igst,
   } = data || {};
   const invoiceData = formatInvioceTableData(data);
   const {
@@ -39,6 +41,7 @@ const PDF = ({ data, onEdit }) => {
     tax_rate_perc,
     igst_cgst_rate,
     invoice_tour_ticket,
+    total_tax_value,
   } = invoiceData;
   console.log("invoiceData", invoiceData);
   const amtWord = amtInWords(total_amount);
@@ -96,7 +99,7 @@ const PDF = ({ data, onEdit }) => {
                       </tr>
                       <tr>
                         <td>State:</td>
-                        <td>{state}</td>
+                        <td style={{ textTransform: "uppercase" }}>{state}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -134,7 +137,9 @@ const PDF = ({ data, onEdit }) => {
                               justifyContent: "space-between",
                             }}
                           >
-                            <span>{customer_state}</span>
+                            <span style={{ textTransform: "uppercase" }}>
+                              {customer_state}
+                            </span>
                             <div>Code : 29</div>
                           </div>
                         </td>
@@ -144,7 +149,7 @@ const PDF = ({ data, onEdit }) => {
                 </div>
                 <div className="right">
                   <div className="t-mode">Transportation Mode: {mode}</div>
-                  <div className="empt"></div>
+                  <div className="empt t-reference">{remark}</div>
                   <div className="inc-status b-t-2">Invoice Status :</div>
                 </div>
               </div>
@@ -162,7 +167,7 @@ const PDF = ({ data, onEdit }) => {
                       <th rowSpan="2">Taxable Value</th>
                       <th colSpan="2">SGST</th>
                       <th colSpan="2">CGST</th>
-                      <th colSpan="2">IGST</th>
+                      {show_igst && <th colSpan="2">IGST</th>}
                       <th rowSpan="2">Total</th>
                     </tr>
                     <tr>
@@ -170,8 +175,12 @@ const PDF = ({ data, onEdit }) => {
                       <th>Amount</th>
                       <th>Rate</th>
                       <th>Amount</th>
-                      <th>Rate</th>
-                      <th>Amount</th>
+                      {show_igst && (
+                        <>
+                          <th>Rate</th>
+                          <th>Amount</th>
+                        </>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -216,8 +225,14 @@ const PDF = ({ data, onEdit }) => {
                             <td>{sgst_amount}</td>
                             <td>{cgst_rate}%</td>
                             <td>{cgst_amount}</td>
-                            <td>{tax_rate}%</td>
-                            <td>{igst_amount}</td>
+                            {show_igst && (
+                              <>
+                                {" "}
+                                <td>{tax_rate}%</td>
+                                <td>{igst_amount}</td>
+                              </>
+                            )}
+
                             <td>{total}</td>
                           </tr>
                         )
@@ -236,8 +251,13 @@ const PDF = ({ data, onEdit }) => {
                       <td colSpan="1">{total_sgst_amount}</td>
                       <td colSpan="1"></td>
                       <td colSpan="1">{total_cgst_amount}</td>
-                      <td colSpan="1"></td>
-                      <td colSpan="1">{total_igst_amount}</td>
+                      {show_igst && (
+                        <>
+                          <td colSpan="1"></td>
+                          <td colSpan="1">{total_igst_amount}</td>
+                        </>
+                      )}
+
                       <td colSpan="1">{total_amount}</td>
                     </tr>
                   </tfoot>
@@ -260,13 +280,16 @@ const PDF = ({ data, onEdit }) => {
                     <div>Add: CGST@{igst_cgst_rate}%</div>
                     <div>{total_cgst_amount}</div>
                   </div>
-                  <div className="itm">
-                    <div>Add: IGST@{tax_rate_perc}%</div>
-                    <div>{total_igst_amount}</div>
-                  </div>
+                  {show_igst && (
+                    <div className="itm">
+                      <div>Add: IGST@{tax_rate_perc}%</div>
+                      <div>{total_igst_amount}</div>
+                    </div>
+                  )}
+
                   <div className="itm">
                     <div>Total Tax Amount</div>
-                    <div>{total_igst_amount}</div>
+                    <div>{total_tax_value}</div>
                   </div>
                   <div className="itm">
                     <div>Total Amount after Tax:</div>
@@ -298,10 +321,10 @@ const PDF = ({ data, onEdit }) => {
           </div>
         </div>
       </div>
-      <div className="actions">
+      <Paper className="actions">
         <Button
           onClick={print}
-          variant="contained"
+          disableElevation
           startIcon={<LocalPrintshopIcon />}
         >
           Print
@@ -310,7 +333,6 @@ const PDF = ({ data, onEdit }) => {
           color="info"
           startIcon={<EditIcon />}
           onClick={onEdit}
-          variant="contained"
           disableElevation
           sx={{ mt: 1 }}
         >
@@ -325,12 +347,12 @@ const PDF = ({ data, onEdit }) => {
           variant="text"
           sx={{ mt: 1 }}
         >
-          New Invoice
+          New
         </Button>
         <Button
           component={Link}
           to={"/"}
-          color="success"
+          color="inherit"
           startIcon={<HomeIcon />}
           onClick={onEdit}
           variant="text"
@@ -338,7 +360,7 @@ const PDF = ({ data, onEdit }) => {
         >
           Home
         </Button>
-      </div>
+      </Paper>
     </div>
   );
 };
