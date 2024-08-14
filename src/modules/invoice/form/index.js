@@ -293,7 +293,7 @@ const FormApp = ({ onSubmit, initialData }) => {
                         <Divider />
                         <Box sx={{ p: 2, px: 5 }}>
                           <MuiField
-                            label={"Reference"}
+                            label={"Remarks"}
                             submitCount={submitCount}
                             multiline
                             rows={3}

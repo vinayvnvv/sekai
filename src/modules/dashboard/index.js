@@ -45,8 +45,16 @@ const Stats = ({ stat, small }) => {
         </Typography>{" "}
         people's travelled
       </Typography>
-      <Stack direction={"row"} alignItems={"center"} spacing={1}>
-        <Typography variant={variant}>Top Places</Typography>
+      <Stack
+        mt={1}
+        component={small ? Card : "div"}
+        variant="outlined"
+        direction={"row"}
+        alignItems={"center"}
+        spacing={1}
+        p={small ? 1 : 0}
+      >
+        <Typography variant={variant}>Most Visited</Typography>
         <Stack direction={"row"} alignItems={"center"} flexWrap={"wrap"}>
           {topPlaces.map((place) => (
             <Chip
